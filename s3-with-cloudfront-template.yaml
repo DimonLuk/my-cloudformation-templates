@@ -1,0 +1,120 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  'AWS::CloudFormation::Designer':
+    60b267b7-9275-4ba0-acba-27c059ed4bc6:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 577
+        'y': 170
+      z: 0
+      embeds: []
+    63b863f9-6e30-4c22-8611-ef2f03385a5d:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 700
+        'y': 170
+      z: 0
+      embeds: []
+      dependson:
+        - 60b267b7-9275-4ba0-acba-27c059ed4bc6
+    97d1076a-4bd8-4557-b71a-b3c3d200ec53:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 700
+        'y': 80
+      z: 0
+      embeds: []
+      isassociatedwith:
+        - 63b863f9-6e30-4c22-8611-ef2f03385a5d
+    cb54eebf-b26a-4d20-b88e-3d34740970b6:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 580
+        'y': 80
+      z: 0
+      embeds: []
+Resources:
+  FrontendDistribution:
+    Type: 'AWS::CloudFront::Distribution'
+    Properties:
+      DistributionConfig:
+        DefaultRootObject: index.html
+        Origins:
+          - DomainName: !GetAtt BucketFrontend.DomainName
+            Id: myS3Origin
+            S3OriginConfig:
+              OriginAccessIdentity: !Join 
+                - /
+                - - origin-access-identity
+                  - cloudfront
+                  - !Ref AccessToFrontendDsitribution
+        Enabled: true
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - DELETE
+            - GET
+            - HEAD
+            - OPTIONS
+            - PATCH
+            - POST
+            - PUT
+          TargetOriginId: myS3Origin
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: allow-all
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 60b267b7-9275-4ba0-acba-27c059ed4bc6
+    DependsOn:
+      - BucketFrontend
+  BucketFrontend:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref S3BucketName
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 63b863f9-6e30-4c22-8611-ef2f03385a5d
+  FrontendBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref BucketFrontend
+      PolicyDocument:
+        Statement:
+          - Sid: '1'
+            Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt AccessToFrontendDsitribution.S3CanonicalUserId
+            Action: 's3:GetObject'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref BucketFrontend
+                - /*
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 97d1076a-4bd8-4557-b71a-b3c3d200ec53
+  AccessToFrontendDsitribution:
+    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: allows-access-to-frontend-cloud-front-distribution
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: cb54eebf-b26a-4d20-b88e-3d34740970b6
+Parameters:
+  S3BucketName:
+    Type: String
+    Default: avpz-project-distribution
+    AllowedPattern: '[a-z0-9\-]{3,}'
