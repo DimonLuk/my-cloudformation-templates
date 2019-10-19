@@ -46,6 +46,7 @@ Resources:
     Type: 'AWS::CloudFront::Distribution'
     Properties:
       DistributionConfig:
+        DefaultRootObject: index.html
         Origins:
           - DomainName: !GetAtt BucketFrontend.DomainName
             Id: myS3Origin
@@ -81,7 +82,7 @@ Resources:
   BucketFrontend:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: avpz-project-bucket-4
+      BucketName: !Ref S3BucketName
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 63b863f9-6e30-4c22-8611-ef2f03385a5d
@@ -93,9 +94,14 @@ Resources:
         Statement:
           - Sid: '1'
             Effect: Allow
-            Principal: '*'
+            Principal:
+              CanonicalUser: !GetAtt AccessToFrontendDsitribution.S3CanonicalUserId
             Action: 's3:GetObject'
-            Resource: 'arn:aws:s3:::avpz-project-bucket-4/*'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref BucketFrontend
+                - /*
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 97d1076a-4bd8-4557-b71a-b3c3d200ec53
@@ -107,3 +113,8 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: cb54eebf-b26a-4d20-b88e-3d34740970b6
+Parameters:
+  S3BucketName:
+    Type: String
+    Default: avpz-project-distribution
+    AllowedPattern: '[a-z0-9\-]{3,}'
