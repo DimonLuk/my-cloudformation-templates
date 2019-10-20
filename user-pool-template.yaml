@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  'AWS::CloudFormation::Designer':
+    4c5fdf07-37ea-48e0-b9e3-7492115b60ac:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 465
+        'y': 174
+      z: 0
+      embeds: []
+    838e0900-3e76-42d2-98f4-6b9931f2b22b:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 330
+        'y': 170
+      z: 0
+      embeds: []
+    018c1a25-be69-4818-be6a-66e4972c2792:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 330
+        'y': 260
+      z: 0
+      embeds: []
+      isassociatedwith:
+        - 4c5fdf07-37ea-48e0-b9e3-7492115b60ac
+Resources:
+  UserPool:
+    Type: 'AWS::Cognito::UserPool'
+    Properties:
+      AliasAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      MfaConfiguration: 'OFF'
+      EmailConfiguration:
+        EmailSendingAccount: COGNITO_DEFAULT
+        ReplyToEmailAddress: dmytro.lukashov@nure.ua
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 4c5fdf07-37ea-48e0-b9e3-7492115b60ac
+  AuthDomain:
+    Type: 'AWS::Cognito::UserPoolDomain'
+    Properties:
+      Domain: !Ref UserPoolDomain
+      UserPoolId: !Ref UserPool
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 838e0900-3e76-42d2-98f4-6b9931f2b22b
+  ApplicationClient:
+    Type: 'AWS::Cognito::UserPoolClient'
+    Properties:
+      AllowedOAuthFlows:
+        - implicit
+      SupportedIdentityProviders:
+        - COGNITO
+      CallbackURLs:
+        - 'https://dg57jv641enf.cloudfront.net'
+      LogoutURLs:
+        - 'https://dg57jv641enf.cloudfront.net'
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - aws.cognito.signin.user.admin
+        - profile
+      ClientName: DefaultClient
+      UserPoolId: !Ref UserPool
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 018c1a25-be69-4818-be6a-66e4972c2792
+Parameters:
+  UserPoolDomain:
+    Type: String
+    Default: avpz-project
+    AllowedPattern: '[a-z0-9\_\-]{2,}'
