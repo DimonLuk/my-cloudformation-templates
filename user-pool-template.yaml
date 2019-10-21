@@ -47,6 +47,80 @@ Resources:
           AttributeDataType: String
           Mutable: false
           Required: true
+        - Name: ukrLang
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: maths
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: urkHistory
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: engLang
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+        - Name: deuLang
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: fraLang
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: spanLang
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: biology
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: geography
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: physics
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: chemistry
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 4c5fdf07-37ea-48e0-b9e3-7492115b60ac
