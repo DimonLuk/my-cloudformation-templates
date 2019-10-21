@@ -30,6 +30,17 @@ Metadata:
       embeds: []
       isassociatedwith:
         - 4c5fdf07-37ea-48e0-b9e3-7492115b60ac
+      dependson:
+        - 9f58880d-5c51-4f2e-ab6d-4e81e5c9871e
+    9f58880d-5c51-4f2e-ab6d-4e81e5c9871e:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 470
+        'y': 270
+      z: 0
+      embeds: []
 Resources:
   UserPool:
     Type: 'AWS::Cognito::UserPool'
@@ -45,7 +56,7 @@ Resources:
       Schema:
         - Name: email
           AttributeDataType: String
-          Mutable: false
+          Mutable: true
           Required: true
         - Name: ukrLang
           AttributeDataType: Number
@@ -139,6 +150,7 @@ Resources:
         - implicit
       SupportedIdentityProviders:
         - COGNITO
+        - Google
       CallbackURLs:
         - 'https://dg57jv641enf.cloudfront.net'
       LogoutURLs:
@@ -154,8 +166,31 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 018c1a25-be69-4818-be6a-66e4972c2792
+    DependsOn:
+      - GoogleIdentityProvider
+  GoogleIdentityProvider:
+    Type: 'AWS::Cognito::UserPoolIdentityProvider'
+    Properties:
+      UserPoolId: !Ref UserPool
+      ProviderType: Google
+      ProviderName: Google
+      ProviderDetails:
+        client_id: !Ref GoogleAppId
+        client_secret: !Ref GoogleAppSecret
+        authorize_scopes: email profile openid
+      AttributeMapping:
+        email: email
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 9f58880d-5c51-4f2e-ab6d-4e81e5c9871e
 Parameters:
   UserPoolDomain:
     Type: String
     Default: avpz-project
     AllowedPattern: '[a-z0-9\_\-]{2,}'
+  GoogleAppId:
+    Type: String
+    Description: Id of google web app
+  GoogleAppSecret:
+    Type: String
+    Description: secret that correspondes to according GoogleAppId
