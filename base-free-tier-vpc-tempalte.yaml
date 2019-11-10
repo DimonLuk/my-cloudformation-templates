@@ -895,6 +895,7 @@ Resources:
         id: bf5d1fa8-7b4b-4e0b-8327-25e26fb7fbba
   BastionInstance:
     Type: 'AWS::EC2::Instance'
+    Condition: CreateBastion
     Properties:
       SecurityGroupIds:
         - !Ref SGBastion
@@ -910,6 +911,7 @@ Resources:
         id: 8703bfb0-151b-4a40-8b0e-a09b2c72f16f
   SGBastion:
     Type: 'AWS::EC2::SecurityGroup'
+    Condition: CreateBastion
     Properties:
       GroupDescription: Security group for bastion instance
       SecurityGroupIngress:
@@ -923,6 +925,7 @@ Resources:
         id: 635155a7-9dc2-438f-927a-d865fe6a7b49
   EIPBastion:
     Type: 'AWS::EC2::EIP'
+    Condition: CreateBastion
     Properties:
       InstanceId: !Ref BastionInstance
     Metadata:
@@ -950,7 +953,18 @@ Outputs:
     Export:
       Name: FreeTierPrivateSubnet2
   SGBastion:
+    Condition: CreateBastion
     Description: Security group for bastion
     Value: !Ref SGBastion
     Export:
       Name: FreeTierBastionSG
+Parameters:
+  IsCreateBastion:
+    Description: Create bastion?
+    Default: No
+    Type: String
+    AllowedValues:
+      - Yes
+      - No
+Conditions:
+  CreateBastion: !Equals [!Ref IsCreateBastion, Yes]

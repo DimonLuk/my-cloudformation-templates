@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  'AWS::CloudFormation::Designer':
+    3f9dbae1-51af-4d11-a9e0-051598a95728:
+      size:
+        width: 270
+        height: 220
+      position:
+        x: 450
+        'y': 70
+      z: 0
+      embeds:
+        - 9dfd47ae-1267-4bbb-9c7c-432a20ca51aa
+        - c87536fe-e76d-40c8-b8bf-21481cddba68
+    9dfd47ae-1267-4bbb-9c7c-432a20ca51aa:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 490
+        'y': 220
+      z: 1
+      parent: 3f9dbae1-51af-4d11-a9e0-051598a95728
+      embeds: []
+    c87536fe-e76d-40c8-b8bf-21481cddba68:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 490
+        'y': 120
+      z: 1
+      parent: 3f9dbae1-51af-4d11-a9e0-051598a95728
+      embeds: []
+      isassociatedwith:
+        - 9dfd47ae-1267-4bbb-9c7c-432a20ca51aa
+      iscontainedinside:
+        - 3f9dbae1-51af-4d11-a9e0-051598a95728
+        - 3f9dbae1-51af-4d11-a9e0-051598a95728
+        - 3f9dbae1-51af-4d11-a9e0-051598a95728
+        - 3f9dbae1-51af-4d11-a9e0-051598a95728
+        - 3f9dbae1-51af-4d11-a9e0-051598a95728
+        - 3f9dbae1-51af-4d11-a9e0-051598a95728
+        - 3f9dbae1-51af-4d11-a9e0-051598a95728
+Resources:
+  DBSubnet:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      SubnetIds:
+        - !Ref Subnet1
+        - !Ref Subnet2
+      DBSubnetGroupDescription: Db subnet group
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 3f9dbae1-51af-4d11-a9e0-051598a95728
+  PostgresSG:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: SG for database
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - CidrIp: !Ref AllowedCidrBlock
+          IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 9dfd47ae-1267-4bbb-9c7c-432a20ca51aa
+  PostgresDatabase:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBSubnetGroupName: !Ref DBSubnet
+      DBInstanceClass: db.t2.micro
+      AllocatedStorage: 20
+      Engine: postgres
+      StorageType: gp2
+      DBName: django_db
+      MasterUserPassword: user12345678
+      MasterUsername: postgres
+      PubliclyAccessible: false
+      BackupRetentionPeriod: 0
+      VPCSecurityGroups:
+        - !Ref PostgresSG
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: c87536fe-e76d-40c8-b8bf-21481cddba68
+Parameters:
+  Subnet1:
+    Description: Subnet 1
+    Type: 'AWS::EC2::Subnet::Id'
+  Subnet2:
+    Description: Subnet 2
+    Type: 'AWS::EC2::Subnet::Id'
+  VpcId:
+    Description: VPC where subnets lies
+    Type: 'AWS::EC2::VPC::Id'
+  AllowedCidrBlock:
+    AllowedPattern: '((\d{1,3})\.){3}\d{1,3}/\d{1,2}'
+    Description: Cidr from which database is accessible
+    Type: String
