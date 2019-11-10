@@ -30,6 +30,61 @@ Metadata:
       embeds: []
       isassociatedwith:
         - 4c5fdf07-37ea-48e0-b9e3-7492115b60ac
+      dependson:
+        - 9f58880d-5c51-4f2e-ab6d-4e81e5c9871e
+    9f58880d-5c51-4f2e-ab6d-4e81e5c9871e:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 470
+        'y': 270
+      z: 0
+      embeds: []
+    5b1a6ef8-4861-4635-86ef-d0e40216c853:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 560
+        'y': 180
+      z: 0
+      embeds: []
+    1a2018b8-adc2-423e-bf6e-669b0ab2c1e4:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 710
+        'y': 180
+      z: 0
+      embeds: []
+      isassociatedwith:
+        - 14547f7b-27d5-4fe9-bcf1-2976beb58cb5
+    2c151301-2ffe-4daa-b835-d9b8823b8073:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 630
+        'y': 200
+      z: 0
+      embeds: []
+      isassociatedwith:
+        - 5b1a6ef8-4861-4635-86ef-d0e40216c853
+      dependson:
+        - 14547f7b-27d5-4fe9-bcf1-2976beb58cb5
+    14547f7b-27d5-4fe9-bcf1-2976beb58cb5:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 800
+        'y': 180
+      z: 0
+      embeds: []
+      isassociatedwith:
+        - 1a2018b8-adc2-423e-bf6e-669b0ab2c1e4
 Resources:
   UserPool:
     Type: 'AWS::Cognito::UserPool'
@@ -45,8 +100,82 @@ Resources:
       Schema:
         - Name: email
           AttributeDataType: String
-          Mutable: false
+          Mutable: true
           Required: true
+        - Name: ukrLang
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: maths
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: urkHistory
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: engLang
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+        - Name: deuLang
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: fraLang
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: spanLang
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: biology
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: geography
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: physics
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
+        - Name: chemistry
+          AttributeDataType: Number
+          Mutable: true
+          Required: false
+          NumberAttributeConstraints:
+            MinValue: 100
+            MaxValue: 200
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 4c5fdf07-37ea-48e0-b9e3-7492115b60ac
@@ -65,6 +194,7 @@ Resources:
         - implicit
       SupportedIdentityProviders:
         - COGNITO
+        - Google
       CallbackURLs:
         - 'https://dg57jv641enf.cloudfront.net'
       LogoutURLs:
@@ -80,8 +210,89 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 018c1a25-be69-4818-be6a-66e4972c2792
+    DependsOn:
+      - GoogleIdentityProvider
+  GoogleIdentityProvider:
+    Type: 'AWS::Cognito::UserPoolIdentityProvider'
+    Properties:
+      UserPoolId: !Ref UserPool
+      ProviderType: Google
+      ProviderName: Google
+      ProviderDetails:
+        client_id: !Ref GoogleAppId
+        client_secret: !Ref GoogleAppSecret
+        authorize_scopes: email profile openid
+      AttributeMapping:
+        email: email
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 9f58880d-5c51-4f2e-ab6d-4e81e5c9871e
+  IdentityPool:
+    Type: 'AWS::Cognito::IdentityPool'
+    Properties:
+      AllowUnauthenticatedIdentities: false
+      CognitoIdentityProviders:
+        - ProviderName: !GetAtt UserPool.ProviderName
+          ClientId: !Ref ApplicationClient
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 5b1a6ef8-4861-4635-86ef-d0e40216c853
+  AuthenticatedUserRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                'cognito-identity.amazonaws.com:aud': !Ref IdentityPool
+              'ForAnyValue:StringLike':
+                'cognito-identity.amazonaws.com:amr': authenticated
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 1a2018b8-adc2-423e-bf6e-669b0ab2c1e4
+  RoleAttachment:
+    Type: 'AWS::Cognito::IdentityPoolRoleAttachment'
+    Properties:
+      IdentityPoolId: !Ref IdentityPool
+      Roles:
+        authenticated: !GetAtt AuthenticatedUserRole.Arn
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 2c151301-2ffe-4daa-b835-d9b8823b8073
+    DependsOn:
+      - AuthenticatedUserPolicy
+  AuthenticatedUserPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: AuthenticatedUserPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'mobileanalytics:PutEvents'
+              - 'cognito-sync:*'
+              - 'cognito-identity:*'
+            Resource:
+              - '*'
+      Roles:
+        - !Ref AuthenticatedUserRole
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 14547f7b-27d5-4fe9-bcf1-2976beb58cb5
 Parameters:
   UserPoolDomain:
     Type: String
     Default: avpz-project
     AllowedPattern: '[a-z0-9\_\-]{2,}'
+  GoogleAppId:
+    Type: String
+    Description: Id of google web app
+  GoogleAppSecret:
+    Type: String
+    Description: secret that correspondes to according GoogleAppId
