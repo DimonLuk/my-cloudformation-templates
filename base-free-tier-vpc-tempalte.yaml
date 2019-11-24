@@ -900,8 +900,8 @@ Resources:
       SecurityGroupIds:
         - !Ref SGBastion
       InstanceType: t2.micro
-      KeyName: my-projects-kp
-      ImageId: ami-0b81f041e647355cd
+      KeyName: !Ref KeyPair
+      ImageId: !Ref BastionInstanceImage
       SubnetId: !Ref PublicSubnet1
       Tags:
         - Key: Name
@@ -966,5 +966,11 @@ Parameters:
     AllowedValues:
       - Yes
       - No
+  BastionInstanceImage:
+    Description: Image for bastion instance
+    Type: AWS::EC2::Image::Id
+  KeyPair:
+    Description: key pair for accessing ec2 instances
+    Type: AWS::EC2::KeyPair::KeyName
 Conditions:
   CreateBastion: !Equals [!Ref IsCreateBastion, Yes]
